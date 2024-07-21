@@ -1,43 +1,47 @@
-import streamlit as st
-import plotly.graph_objects as go
-from wykrywacz_paternów import wyświetlWykresZKropkami
-import requests
-from pbWykrywacz_świeczek import wykryjŚwieczki
-from pobieracz_danych import get_data
+import pandas as pd
+import numpy as np
+from candlestick import candlestick
 
-def wyślijWiadomośc(wiadomość):
-    requests.post("https://ntfy.sh/xxxxx",
-    data=wiadomość.encode(encoding='utf-8'))
+def wykryjŚwieczki(df0):
+    df_inverted_hammer = candlestick.inverted_hammer(df0, target='inverted_hammer')
+    df_hammer = candlestick.hammer(df0, target='hammer')
+    df_bullish_engulfing = candlestick.bullish_engulfing(df0, target='bullish_engulfing')
+    df_doji = candlestick.doji(df0, target='doji')
+    df_doji_star = candlestick.doji_star(df0, target='doji_star')
+    df_dragonfly_doji = candlestick.dragonfly_doji(df0, target='dragonfly_doji')
+    df_piercing_pattern = candlestick.piercing_pattern(df0, target='piercing_pattern')
+    df_morning_star = candlestick.morning_star(df0, target='morning_star')
+    df_rain_drop = candlestick.rain_drop(df0, target='rain_drop')
+    df_hanging_man = candlestick.hanging_man(df0, target='hanging_man')
+    df_gravestone_doji = candlestick.gravestone_doji(df0, target='shooting_star')
+    df_bearish_engulfing = candlestick.bearish_engulfing(df0, target='bearish_engulfing')
+    df_morning_star_doji = candlestick.morning_star_doji(df0, target='morning_star_doji')
+    df_rain_drop_doji = candlestick.rain_drop_doji(df0, target='rain_drop_doji')
+    df_star = candlestick.star(df0, target='star')
+    df_shooting_star = candlestick.shooting_star(df0, target='shooting_star')
+    df_bearish_harami = candlestick.bearish_harami(df0, target='bearish_harami')
+    df_bullish_harami = candlestick.bullish_harami(df0, target='bullish_harami')
+    df_dark_cloud_cover = candlestick.dark_cloud_cover(df0, target='dark_cloud_cover')
 
-st.title("Przewidywanie akcji")
-st.header("Regresja liniowa")
+    df_all = df0.copy()
+    df_all['inverted_hammer'] = df_inverted_hammer['inverted_hammer']
+    df_all['hammer'] = df_hammer['hammer']
+    df_all['bullish_engulfing'] = df_bullish_engulfing['bullish_engulfing']
+    df_all['doji'] = df_doji['doji']
+    df_all['doji_star'] = df_doji_star['doji_star']
+    df_all['dragonfly_doji'] = df_dragonfly_doji['dragonfly_doji']
+    df_all['piercing_pattern'] = df_piercing_pattern['piercing_pattern']
+    df_all['morning_star'] = df_morning_star['morning_star']
+    df_all['rain_drop'] = df_rain_drop['rain_drop']
+    df_all['hanging_man'] = df_hanging_man['hanging_man']
+    df_all['gravestone_doji'] = df_gravestone_doji['shooting_star']
+    df_all['bearish_engulfing'] = df_bearish_engulfing['bearish_engulfing']
+    df_all['morning_star_doji'] = df_morning_star_doji['morning_star_doji']
+    df_all['rain_drop_doji'] = df_rain_drop_doji['rain_drop_doji']
+    df_all['star'] = df_star['star']
+    df_all['shooting_star'] = df_shooting_star['shooting_star']
+    df_all['bearish_harami'] = df_bearish_harami['bearish_harami']
+    df_all['bullish_harami'] = df_bullish_harami['bullish_harami']
+    df_all['dark_cloud_cover'] = df_dark_cloud_cover['dark_cloud_cover']
 
-if __name__ == "__main__":
-    wejście = st.text_input("Wpisz nazwę akcji", "AAPL")
-
-    dane = get_data('AAPL', '2022-12-01', '2023-01-12', override=True)
-
-    # sprawienie, że kolumny są z małych liter
-    dane.columns = map(str.lower, dane.columns)
-    # przygotowanie danych do wykrywania świeczek
-    dane_do_świeczek = dane[['open', 'high', 'low', 'close']]
-    # wykrywanie świeczek
-    dane_ze_świeczkami = wykryjŚwieczki(dane_do_świeczek)
-    # usunięcie pierwszego wiersza, bo jest NaN
-    dane_ze_świeczkami = dane_ze_świeczkami.iloc[1:]
-
-    # Line chart of closing price
-    fig = go.Figure(data=go.Scatter(x=dane_ze_świeczkami.index, y=dane_ze_świeczkami['close'], mode='lines', name='Closing Price'))
-
-    # Add points for each candlestick formation
-    formations = ['inverted_hammer', 'hammer', 'bullish_engulfing', 'doji', 'doji_star', 'dragonfly_doji', 'piercing_pattern', 'morning_star', 'rain_drop', 'hanging_man', 'gravestone_doji', 'bearish_engulfing', 'morning_star_doji', 'rain_drop_doji', 'star', 'shooting_star', 'bearish_harami', 'bullish_harami', 'dark_cloud_cover']
-    
-    for index, row in dane_ze_świeczkami.iterrows():
-        for formation in formations:
-            if row[formation]:
-                fig.add_trace(go.Scatter(x=[index], y=[row['close']], mode='markers', name=formation.replace('_', ' ').title()))
-
-    fig.update_layout(xaxis_title='Date', yaxis_title='Closing Price', title='Closing Price with Candlestick Formations')
-
-    # Display the chart on Streamlit
-    st.plotly_chart(fig)
+    return df_all
