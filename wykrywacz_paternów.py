@@ -191,3 +191,4 @@ def wyświetlWykresZKropkami(akcja):
     fig.add_trace(go.Scatter(x=df19[df19['dark_cloud_cover'] == True].index, y=df19[df19['dark_cloud_cover'] == True]['close'], name='Dark Cloud Cover', mode='markers', marker=dict(color='darkred')))
     dfAll
     st.plotly_chart(fig) #Wyświetlanie wykresu
+
