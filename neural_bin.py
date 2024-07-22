@@ -87,3 +87,6 @@ if __name__ == "__main__":
     input_data = "AAPL"
     trained_model = train_model(input_data, create_model_1)
     print("Best model has been successfully trained and saved to the file.")
+
+
+
